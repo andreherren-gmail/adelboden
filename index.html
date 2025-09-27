@@ -87,7 +87,10 @@
           <div class="text-sm font-medium">Höchst (Adelboden)</div>
           <a class="text-xs text-cyan-700 underline" rel="noopener" target="_blank" href="https://adelbodenlenk.roundshot.com/hoechstbahn/">Quelle</a>
         </div>
-        <iframe src="https://adelbodenlenk.roundshot.com/hoechstbahn/" width="100%" height="280" loading="lazy" title="Webcam Höchst (roundshot)"></iframe>
+        <!-- Replaced iframe with static live image to avoid cookie prompt -->
+        <img src="https://adelbodenlenk.roundshot.com/hoechstbahn/current.jpg"
+             alt="Webcam Höchst Adelboden (Roundshot)"
+             class="w-full rounded-b-xl border-x border-b border-cyan-100" loading="lazy">
       </div>
       <div class="rounded-xl overflow-hidden">
         <div class="flex items-center justify-between px-2 py-1 bg-cyan-50 border-b border-cyan-100">
@@ -97,7 +100,7 @@
         <iframe src="https://webtv.feratel.com/webtv/?cam=4230&design=v5" width="100%" height="280" allow="autoplay; fullscreen" loading="lazy" title="Webcam Metschstand (feratel)"></iframe>
       </div>
     </div>
-    <p class="mt-3 text-[11px] text-slate-500">Falls ein iFrame blockiert wird, bitte den „Quelle“-Link öffnen (Browser-Policy).</p>
+    <p class="mt-3 text-[11px] text-slate-500">Hinweis: Das Roundshot‑Bild wird ohne Cookies geladen. Für das interaktive Panorama bitte den „Quelle“-Link öffnen.</p>
   </section>
 
   <!-- Wetter (meteoblue bevorzugt) -->
@@ -200,7 +203,6 @@ function buildDatesFrom(startISO, n){
   return out;
 }
 function deepLinkToShop(date){
-  // Generischer Link zum Shop; Datum als Query anhängen (harmlos, falls ignoriert).
   const d = date.toISOString().slice(0,10);
   const u = new URL(RULES.link);
   u.searchParams.set('date', d);
@@ -247,7 +249,6 @@ function renderLifts(list){
 function renderPistes(list){
   const box = document.getElementById('pistes');
   box.innerHTML = '';
-  // Off-season guard: In Sommer alle geschlossen anzeigen
   const now = new Date();
   const offSeason = !isWinter(now);
   (offSeason ? list.map(p=>({...p,status:'closed'})) : list).forEach(p => {
@@ -331,22 +332,12 @@ async function loadWeatherFallback(){
 }
 
 // ===== Init: Build tariffs from chosen start date =====
-function init(){
-  // Prefill editors from storage
-  try { const s = localStorage.getItem('mb_widget_html'); if (s) document.getElementById('mbEmbed').value = s; } catch(e){}
-  try { const pr = localStorage.getItem('price_rules'); if (pr) { RULES = JSON.parse(pr); document.getElementById('priceRules').value = JSON.stringify(RULES, null, 2);} } catch(e){}
-  document.getElementById('tariffStart').value = EDIT.start;
-  document.getElementById('tariffDays').value = EDIT.days;
-
-  renderMBWidget();
-  const dates = buildDatesFrom(EDIT.start, EDIT.days);
-  renderTariffs(dates);
-  renderLifts(DATA.lifts);
-  renderSnow(DATA.snow);
-  renderPistes(DATA.pistes);
+function isWeekend(d){ const n = d.getDay(); return n===0 || n===6; }
+function buildDatesFrom(startISO, n){
+  const out = []; const base = new Date(startISO+"T00:00:00");
+  for (let i=0;i<n;i++){ const d = new Date(base); d.setDate(base.getDate()+i); out.push(d); }
+  return out;
 }
-
-// Actions
 document.getElementById('refreshBtn').addEventListener('click', e => { e.preventDefault(); init(); });
 document.getElementById('saveMB').addEventListener('click', () => {
   try { localStorage.setItem('mb_widget_html', document.getElementById('mbEmbed').value); renderMBWidget(); } catch(e){ alert('Konnte meteoblue Widget nicht speichern'); }
@@ -363,12 +354,26 @@ document.getElementById('applyTariffRange').addEventListener('click', () => {
   const dates = buildDatesFrom(EDIT.start, EDIT.days);
   renderTariffs(dates);
 });
-
 document.getElementById('saveLifts').addEventListener('click', () => {
   try { const obj = JSON.parse(document.getElementById('liftsEdit').value); DATA.lifts = obj; localStorage.setItem('adelboden_lifts', JSON.stringify(obj)); renderLifts(DATA.lifts); } catch(e){ alert('Ungültiges JSON Anlagen'); }
 });
 
-// Boot
+function init(){
+  try { const s = localStorage.getItem('mb_widget_html'); if (s) document.getElementById('mbEmbed').value = s; } catch(e){}
+  try { const pr = localStorage.getItem('price_rules'); if (pr) { RULES = JSON.parse(pr); document.getElementById('priceRules').value = JSON.stringify(RULES, null, 2);} } catch(e){}
+  const st = localStorage.getItem('tariff_start'); if (st) EDIT.start = st;
+  const nd = localStorage.getItem('tariff_days'); if (nd) EDIT.days = parseInt(nd,10)||EDIT.days;
+  document.getElementById('tariffStart').value = EDIT.start;
+  document.getElementById('tariffDays').value = EDIT.days;
+
+  renderMBWidget();
+  const dates = buildDatesFrom(EDIT.start, EDIT.days);
+  renderTariffs(dates);
+  renderLifts(DATA.lifts);
+  renderSnow(DATA.snow);
+  renderPistes(DATA.pistes);
+}
+
 init();
 </script>
 
