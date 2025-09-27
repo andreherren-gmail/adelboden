@@ -4,11 +4,15 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Adelboden-Lenk • Sillerenbühl – Überblick</title>
-  <meta name="description" content="Mobile Übersicht für Adelboden-Lenk (Sillerenbühl): Webcams, Wetter, Tarife, Anlagen, Schnee, Pisten." />
+  <meta name="description" content="Mobile Übersicht: Webcams, Wetter (meteoblue), Tarife, Anlagen, Schneebericht & Pisten. Reines HTML/JS, eine Datei." />
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    iframe{ border:0; }
+    .sticky-top { position: sticky; top: 0; z-index: 40; backdrop-filter: blur(6px); }
+  </style>
 </head>
 <body class="h-full text-slate-900 bg-cyan-50">
-<header class="sticky top-0 bg-cyan-100/80 border-b border-cyan-200 z-40 backdrop-blur">
+<header class="sticky-top bg-cyan-100/80 border-b border-cyan-200">
   <div class="max-w-3xl mx-auto px-4 py-2 flex items-center gap-3 relative">
     <div class="w-8 h-8 rounded-xl bg-cyan-200 flex items-center justify-center">⛷️</div>
     <div class="flex-1">
@@ -18,7 +22,7 @@
     <a href="#" id="refreshBtn" class="text-xs bg-cyan-700 text-white px-3 py-1 rounded-full">Aktualisieren</a>
     <details class="ml-2">
       <summary class="text-xs cursor-pointer px-2 py-1 rounded-full border">⚙️ Daten</summary>
-      <div class="absolute right-2 mt-2 w-[92vw] max-w-md bg-white border rounded-2xl shadow-xl p-3 space-y-3">
+      <div class="absolute right-2 mt-2 w-[92vw] max-w-md bg-white border rounded-2xl shadow-xl p-3 space-y-4">
         <div>
           <div class="text-xs font-semibold mb-1">Tarife (JSON Array)</div>
           <textarea id="tariffEdit" class="w-full h-24 text-xs border rounded-xl p-2">[
@@ -30,9 +34,33 @@
         </div>
         <div>
           <div class="text-xs font-semibold mb-1">meteoblue Widget HTML</div>
-          <textarea id="mbEmbed" class="w-full h-20 text-xs border rounded-xl p-2" placeholder="meteoblue Widget-Code hier einfügen"></textarea>
+          <textarea id="mbEmbed" class="w-full h-20 text-xs border rounded-xl p-2" placeholder="meteoblue 3‑Tage kompakt – Widget-Code hier einfügen"></textarea>
           <button id="saveMB" class="mt-1 text-xs bg-cyan-700 text-white px-2 py-1 rounded">meteoblue speichern</button>
         </div>
+        <div>
+          <div class="text-xs font-semibold mb-1">Schnee (JSON)</div>
+          <textarea id="snowEdit" class="w-full h-24 text-xs border rounded-xl p-2">{ "valley_cm": 20, "mountain_cm": 70, "fresh24_cm": 3, "last_snow": "2025-01-10", "quality": "griffig" }</textarea>
+          <button id="saveSnow" class="mt-1 text-xs bg-cyan-700 text-white px-2 py-1 rounded">Speichern</button>
+        </div>
+        <div>
+          <div class="text-xs font-semibold mb-1">Pisten (JSON Array)</div>
+          <textarea id="pistesEdit" class="w-full h-24 text-xs border rounded-xl p-2">[
+  { "name": "Silleren – Adelboden (Talabfahrt)", "difficulty": "red", "status": "open", "length_km": 5.1 },
+  { "name": "Geils – Bergläger", "difficulty": "blue", "status": "part", "length_km": 2.3 },
+  { "name": "Hahnenmoos – Geils", "difficulty": "red", "status": "closed", "length_km": 3.4 }
+]</textarea>
+          <button id="savePistes" class="mt-1 text-xs bg-cyan-700 text-white px-2 py-1 rounded">Speichern</button>
+        </div>
+        <div>
+          <div class="text-xs font-semibold mb-1">Anlagen (JSON Array)</div>
+          <textarea id="liftsEdit" class="w-full h-24 text-xs border rounded-xl p-2">[
+  { "name": "Oey – Bergläger", "status": "open", "from": "08:30", "to": "16:45" },
+  { "name": "Bergläger – Sillerenbühl", "status": "open", "from": "08:35", "to": "16:40" },
+  { "name": "Geils – Hahnenmoos", "status": "pause", "from": "09:00", "to": "16:30" }
+]</textarea>
+          <button id="saveLifts" class="mt-1 text-xs bg-cyan-700 text-white px-2 py-1 rounded">Speichern</button>
+        </div>
+        <div class="text-[11px] text-slate-500">Hinweis: Alles wird lokal im Browser gespeichert (localStorage). Weiterhin nur diese eine Datei.</div>
       </div>
     </details>
   </div>
@@ -40,14 +68,46 @@
 
 <main class="max-w-3xl mx-auto px-4 py-4 space-y-4 sm:space-y-6">
 
-  <!-- Wetter -->
+  <!-- Webcams -->
+  <section class="bg-white rounded-2xl shadow-md p-4 sm:p-6">
+    <h2 class="text-lg font-semibold tracking-tight mb-3 text-cyan-800">Webcams</h2>
+    <div class="grid grid-cols-1 gap-3">
+      <!-- Feratel: Sillerenbühl -->
+      <div class="rounded-xl overflow-hidden">
+        <div class="flex items-center justify-between px-2 py-1 bg-cyan-50 border-b border-cyan-100">
+          <div class="text-sm font-medium">Sillerenbühl (1974 m)</div>
+          <a class="text-xs text-cyan-700 underline" rel="noopener" target="_blank" href="https://webtv.feratel.com/webtv/?c0=0&c2=1&cam=4107&design=v5&lc=4107&lg=de&s=0">Quelle</a>
+        </div>
+        <iframe src="https://webtv.feratel.com/webtv/?c0=0&c2=1&cam=4107&design=v5&lc=4107&lg=de&s=0" width="100%" height="280" allow="autoplay; fullscreen" loading="lazy" title="Webcam Sillerenbühl (feratel)"></iframe>
+      </div>
+      <!-- Roundshot: Höchst (Adelboden) -->
+      <div class="rounded-xl overflow-hidden">
+        <div class="flex items-center justify-between px-2 py-1 bg-cyan-50 border-b border-cyan-100">
+          <div class="text-sm font-medium">Höchst (Adelboden)</div>
+          <a class="text-xs text-cyan-700 underline" rel="noopener" target="_blank" href="https://adelbodenlenk.roundshot.com/hoechstbahn/">Quelle</a>
+        </div>
+        <iframe src="https://adelbodenlenk.roundshot.com/hoechstbahn/" width="100%" height="280" loading="lazy" title="Webcam Höchst (roundshot)"></iframe>
+      </div>
+      <!-- Feratel: Metschstand (Lenk) -->
+      <div class="rounded-xl overflow-hidden">
+        <div class="flex items-center justify-between px-2 py-1 bg-cyan-50 border-b border-cyan-100">
+          <div class="text-sm font-medium">Metschstand (2103 m)</div>
+          <a class="text-xs text-cyan-700 underline" rel="noopener" target="_blank" href="https://webtv.feratel.com/webtv/?cam=4230&design=v5">Quelle</a>
+        </div>
+        <iframe src="https://webtv.feratel.com/webtv/?cam=4230&design=v5" width="100%" height="280" allow="autoplay; fullscreen" loading="lazy" title="Webcam Metschstand (feratel)"></iframe>
+      </div>
+    </div>
+    <p class="mt-3 text-[11px] text-slate-500">Falls ein iFrame blockiert wird, bitte den „Quelle“-Link öffnen (Browser-Policy).</p>
+  </section>
+
+  <!-- Wetter (meteoblue bevorzugt) -->
   <section class="bg-white rounded-2xl shadow-md p-4 sm:p-6">
     <div class="flex items-center justify-between">
-      <h2 class="text-lg font-semibold mb-3 text-cyan-800">Wetter</h2>
+      <h2 class="text-lg font-semibold tracking-tight mb-3 text-cyan-800">Wetter</h2>
       <span id="wxUpdated" class="text-xs px-2 py-0.5 rounded-full bg-cyan-100">lädt…</span>
     </div>
     <div id="mbWidget" class="rounded-xl overflow-hidden border mb-3 hidden"></div>
-    <p id="mbHint" class="text-[11px] text-slate-500 hidden">Quelle: meteoblue Widget.</p>
+    <p id="mbHint" class="text-[11px] text-slate-500 hidden">Quelle: meteoblue (3‑Tage kompakt).</p>
     <div id="wxFallback">
       <div id="wxNow" class="grid grid-cols-3 gap-2 text-center">
         <div><div class="text-3xl font-bold" id="tempNow">–°</div><div class="text-xs text-slate-500">Jetzt</div></div>
@@ -55,26 +115,83 @@
         <div><div class="text-lg font-semibold" id="codeNow">–</div><div class="text-xs text-slate-500">Wettercode</div></div>
       </div>
       <div id="wxDaily" class="mt-3 grid grid-cols-3 gap-2"></div>
+      <p class="mt-3 text-[11px] text-slate-500">Fallback: Open‑Meteo (Sillerenbühl).</p>
     </div>
   </section>
 
-  <!-- Tarife -->
+  <!-- Tarife (nächste 3 Tage) -->
   <section class="bg-white rounded-2xl shadow-md p-4 sm:p-6">
-    <h2 class="text-lg font-semibold mb-3 text-cyan-800">Tarife nächste 3 Tage</h2>
+    <h2 class="text-lg font-semibold tracking-tight mb-3 text-cyan-800">Tarife nächste 3 Tage</h2>
     <div id="tariffs" class="grid grid-cols-1 gap-2"></div>
   </section>
 
+  <!-- Anlagen -->
+  <section class="bg-white rounded-2xl shadow-md p-4 sm:p-6">
+    <div class="flex items-center justify-between">
+      <h2 class="text-lg font-semibold tracking-tight mb-3 text-cyan-800">Geöffnete Anlagen</h2>
+      <a class="text-xs text-cyan-700 underline" rel="noopener" target="_blank" href="https://adelboden-lenk-kandersteg.ch/en/timetables">Live-Anzeige</a>
+    </div>
+    <div id="lifts" class="grid grid-cols-1 gap-2"></div>
+  </section>
+
+  <!-- Schneebericht -->
+  <section class="bg-white rounded-2xl shadow-md p-4 sm:p-6">
+    <div class="flex items-center justify-between">
+      <h2 class="text-lg font-semibold tracking-tight mb-3 text-cyan-800">Schneebericht</h2>
+      <a class="text-xs text-cyan-700 underline" rel="noopener" target="_blank" href="https://www.adelboden-lenk.ch/winter/schnee-und-pistenbericht">Offizielle Seite</a>
+    </div>
+    <div class="grid grid-cols-2 gap-2">
+      <div class="rounded-xl border border-cyan-100 p-3"><div class="text-xs text-slate-500">Tal</div><div class="text-base font-semibold" id="snowValley">–</div></div>
+      <div class="rounded-xl border border-cyan-100 p-3"><div class="text-xs text-slate-500">Berg</div><div class="text-base font-semibold" id="snowMountain">–</div></div>
+      <div class="rounded-xl border border-cyan-100 p-3"><div class="text-xs text-slate-500">Neuschnee (24h)</div><div class="text-base font-semibold" id="snowFresh">–</div></div>
+      <div class="rounded-xl border border-cyan-100 p-3"><div class="text-xs text-slate-500">Letzter Schneefall</div><div class="text-base font-semibold" id="snowLast">–</div></div>
+    </div>
+  </section>
+
+  <!-- Pisten -->
+  <section class="bg-white rounded-2xl shadow-md p-4 sm:p-6">
+    <div class="flex items-center justify-between">
+      <h2 class="text-lg font-semibold tracking-tight mb-3 text-cyan-800">Pisten offen</h2>
+      <a class="text-xs text-cyan-700 underline" rel="noopener" target="_blank" href="https://www.adelboden-lenk.ch/winter/schnee-und-pistenbericht">Live-Pistenbericht</a>
+    </div>
+    <div id="pistes" class="grid grid-cols-1 gap-2"></div>
+  </section>
+
+  <footer class="pb-8 pt-2 text-center text-[11px] text-slate-500">
+    Reines HTML/JS. Keine Cookies, kein Backend. Quellen: meteoblue (Widget), Open‑Meteo, feratel/roundshot, Adelboden‑Lenk.
+  </footer>
 </main>
 
 <script>
+// ---- Embedded Data (editierbar via ⚙️) ----
 let DATA = {
   tariffs: [
     { date: "2025-09-27", label: "Sa 27.09", from_chf: 72, link: "https://www.adelboden-lenk.ch/tarife" },
     { date: "2025-09-28", label: "So 28.09", from_chf: 68, link: "https://www.adelboden-lenk.ch/tarife" },
     { date: "2025-09-29", label: "Mo 29.09", from_chf: 65, link: "https://www.adelboden-lenk.ch/tarife" }
+  ],
+  snow: { valley_cm: 20, mountain_cm: 70, fresh24_cm: 3, last_snow: "2025-01-10", quality: "griffig" },
+  pistes: [
+    { name: "Silleren – Adelboden (Talabfahrt)", difficulty: "red", status: "open", length_km: 5.1 },
+    { name: "Geils – Bergläger", difficulty: "blue", status: "part", length_km: 2.3 },
+    { name: "Hahnenmoos – Geils", difficulty: "red", status: "closed", length_km: 3.4 }
+  ],
+  lifts: [
+    { name: "Oey – Bergläger", status: "open", from: "08:30", to: "16:45" },
+    { name: "Bergläger – Sillerenbühl", status: "open", from: "08:35", to: "16:40" },
+    { name: "Geils – Hahnenmoos", status: "pause", from: "09:00", to: "16:30" }
   ]
 };
 
+// load overrides from localStorage
+try {
+  const t = localStorage.getItem('tariffs'); if (t) DATA.tariffs = JSON.parse(t);
+  const s = localStorage.getItem('adelboden_snow'); if (s) DATA.snow = JSON.parse(s);
+  const p = localStorage.getItem('adelboden_pistes'); if (p) DATA.pistes = JSON.parse(p);
+  const l = localStorage.getItem('adelboden_lifts'); if (l) DATA.lifts = JSON.parse(l);
+} catch(e){}
+
+// ---- meteoblue Widget vs Fallback ----
 function renderMBWidget() {
   const html = localStorage.getItem('mb_widget_html');
   const box = document.getElementById('mbWidget');
@@ -90,9 +207,49 @@ function renderMBWidget() {
     box.classList.add('hidden');
     hint.classList.add('hidden');
     fb.classList.remove('hidden');
+    loadWeatherFallback();
   }
 }
 
+// ---- Open-Meteo Fallback (simple) ----
+async function loadWeatherFallback() {
+  const url = new URL('https://api.open-meteo.com/v1/forecast');
+  url.search = new URLSearchParams({
+    latitude: 46.4715,
+    longitude: 7.5183,
+    current: 'temperature_2m,wind_speed_10m,weather_code',
+    daily: 'temperature_2m_max,temperature_2m_min,precipitation_sum',
+    forecast_days: '3',
+    timezone: 'Europe/Zurich'
+  }).toString();
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+    const { current, daily } = data;
+    document.getElementById('tempNow').textContent = `${Math.round(current.temperature_2m)}°C`;
+    document.getElementById('windNow').textContent = `${Math.round(current.wind_speed_10m)} m/s`;
+    document.getElementById('codeNow').textContent = `WMO ${current.weather_code}`;
+    document.getElementById('wxUpdated').textContent = new Date().toLocaleTimeString('de-CH',{hour:'2-digit',minute:'2-digit'});
+    const daysEl = document.getElementById('wxDaily');
+    daysEl.innerHTML = '';
+    for (let i = 0; i < daily.time.length; i++) {
+      const max = Math.round(daily.temperature_2m_max[i]);
+      const min = Math.round(daily.temperature_2m_min[i]);
+      const pr = Math.round(daily.precipitation_sum[i] || 0);
+      const dd = new Date(daily.time[i]).toLocaleDateString('de-CH', { weekday: 'short' });
+      const card = document.createElement('div');
+      card.className = 'rounded-xl border border-cyan-100 p-2 text-center';
+      card.innerHTML = `<div class="text-xs text-slate-500">${dd}</div>
+                        <div class="text-base font-semibold">${max}° / ${min}°</div>
+                        <div class="text-[11px] text-slate-500">${pr} mm</div>`;
+      daysEl.appendChild(card);
+    }
+  } catch(err) {
+    document.getElementById('wxUpdated').textContent = 'offline';
+  }
+}
+
+// ---- Tariffs ----
 function renderTariffs() {
   const list = DATA.tariffs;
   const box = document.getElementById('tariffs');
@@ -100,29 +257,94 @@ function renderTariffs() {
   list.forEach(t => {
     const row = document.createElement('a');
     row.href = t.link; row.target = '_blank';
-    row.className = 'rounded-xl border p-3 flex items-center justify-between hover:bg-cyan-50';
-    row.innerHTML = `<div><div class="text-sm font-semibold">${t.label}</div><div class="text-[11px] text-slate-500">ab CHF ${t.from_chf}</div></div><span class="text-xs bg-cyan-100 text-cyan-700 px-2 py-0.5 rounded-full">Ticket</span>`;
+    row.className = 'rounded-xl border border-cyan-100 p-3 flex items-center justify-between hover:bg-cyan-50';
+    row.innerHTML = `<div><div class="text-sm font-semibold">${t.label}</div><div class="text-[11px] text-slate-500">ab CHF ${t.from_chf}</div></div>
+                     <span class="text-xs bg-cyan-100 text-cyan-700 px-2 py-0.5 rounded-full">Ticket</span>`;
     box.appendChild(row);
   });
 }
 
-document.getElementById('refreshBtn').addEventListener('click', e => { e.preventDefault(); renderMBWidget(); renderTariffs(); });
+// ---- Lifts ----
+function renderLifts(list) {
+  const box = document.getElementById('lifts');
+  box.innerHTML = '';
+  list.forEach(item => {
+    const color = item.status === 'open' ? 'bg-emerald-100 text-emerald-700' :
+                  item.status === 'pause' ? 'bg-amber-100 text-amber-700' : 'bg-rose-100 text-rose-700';
+    const row = document.createElement('div');
+    row.className = 'rounded-xl border border-cyan-100 p-3 flex items-center justify-between gap-3';
+    row.innerHTML = `<div><div class="text-sm font-semibold">${item.name}</div>
+                      <div class="text-[11px] text-slate-500">${item.from ? `${item.from}–${item.to}` : '—'}</div></div>
+                     <span class="text-xs px-2 py-0.5 rounded-full ${color}">${item.status}</span>`;
+    box.appendChild(row);
+  });
+}
+
+// ---- Snow ----
+function renderSnow(data) {
+  const set = (id, v) => document.getElementById(id).textContent = v ?? '–';
+  set('snowValley', `${data.valley_cm ?? '–'} cm`);
+  set('snowMountain', `${data.mountain_cm ?? '–'} cm`);
+  set('snowFresh', `${data.fresh24_cm ?? '–'} cm`);
+  set('snowLast', data.last_snow ? new Date(data.last_snow).toLocaleDateString('de-CH') : '–');
+}
+
+// ---- Pistes ----
+function renderPistes(list) {
+  const box = document.getElementById('pistes');
+  box.innerHTML = '';
+  list.forEach(p => {
+    const statusColor = p.status === 'open' ? 'bg-emerald-100 text-emerald-700' :
+                        p.status === 'part' ? 'bg-amber-100 text-amber-700' : 'bg-rose-100 text-rose-700';
+    const difficulty = p.difficulty === 'blue' ? '🔵' : p.difficulty === 'red' ? '🔴' : '⚫';
+    const row = document.createElement('div');
+    row.className = 'rounded-xl border border-cyan-100 p-3 flex items-center justify-between gap-3';
+    row.innerHTML = `<div><div class="text-sm font-semibold">${difficulty} ${p.name}</div>
+                      <div class="text-[11px] text-slate-500">${p.length_km ? `${Number(p.length_km).toFixed(1)} km` : ''}</div></div>
+                     <span class="text-xs px-2 py-0.5 rounded-full ${statusColor}">${p.status}</span>`;
+    box.appendChild(row);
+  });
+}
+
+// ---- Init & Editor ----
+function init() {
+  renderMBWidget();
+  renderTariffs();
+  renderLifts(DATA.lifts);
+  renderSnow(DATA.snow);
+  renderPistes(DATA.pistes);
+}
+document.getElementById('refreshBtn').addEventListener('click', e => { e.preventDefault(); init(); });
 
 (function bootEditor(){
   const tariffsArea = document.getElementById('tariffEdit');
   const mbArea = document.getElementById('mbEmbed');
-  try { tariffsArea.value = JSON.stringify(DATA.tariffs, null, 2);} catch(e){}
+  const snowArea = document.getElementById('snowEdit');
+  const pistesArea = document.getElementById('pistesEdit');
+  const liftsArea = document.getElementById('liftsEdit');
+  try { tariffsArea.value = JSON.stringify(DATA.tariffs, null, 2); } catch(e){}
   try { const s = localStorage.getItem('mb_widget_html'); if (s) mbArea.value = s; } catch(e){}
+  try { snowArea.value = JSON.stringify(DATA.snow, null, 2); } catch(e){}
+  try { pistesArea.value = JSON.stringify(DATA.pistes, null, 2); } catch(e){}
+  try { liftsArea.value = JSON.stringify(DATA.lifts, null, 2); } catch(e){}
   document.getElementById('saveTariff').addEventListener('click', () => {
     try { const obj = JSON.parse(tariffsArea.value); DATA.tariffs = obj; localStorage.setItem('tariffs', JSON.stringify(obj)); renderTariffs(); } catch(e){ alert('Ungültiges JSON Tarife'); }
   });
   document.getElementById('saveMB').addEventListener('click', () => {
     try { localStorage.setItem('mb_widget_html', mbArea.value); renderMBWidget(); } catch(e){ alert('Konnte meteoblue Widget nicht speichern'); }
   });
+  document.getElementById('saveSnow').addEventListener('click', () => {
+    try { const obj = JSON.parse(snowArea.value); DATA.snow = obj; localStorage.setItem('adelboden_snow', JSON.stringify(obj)); renderSnow(DATA.snow); } catch(e){ alert('Ungültiges JSON Schnee'); }
+  });
+  document.getElementById('savePistes').addEventListener('click', () => {
+    try { const obj = JSON.parse(pistesArea.value); DATA.pistes = obj; localStorage.setItem('adelboden_pistes', JSON.stringify(obj)); renderPistes(DATA.pistes); } catch(e){ alert('Ungültiges JSON Pisten'); }
+  });
+  document.getElementById('saveLifts').addEventListener('click', () => {
+    try { const obj = JSON.parse(liftsArea.value); DATA.lifts = obj; localStorage.setItem('adelboden_lifts', JSON.stringify(obj)); renderLifts(DATA.lifts); } catch(e){ alert('Ungültiges JSON Anlagen'); }
+  });
 })();
 
-renderMBWidget();
-renderTariffs();
+init();
 </script>
 
 </body>
