@@ -4,16 +4,15 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Adelboden-Lenk • Sillerenbühl – Überblick</title>
-  <meta name="description" content="Mobile Übersicht: Webcams, Wetter (meteoblue), Tarife, Anlagen, Schneebericht & Pisten. Reines HTML/JS, eine Datei." />
+  <meta name="description" content="Mobile Übersicht: Webcams, Wetter (meteoblue), Tarife (dynamisch), Anlagen, Schneebericht & Pisten. Eine Datei, kein Backend." />
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     iframe{ border:0; }
-    .sticky-top { position: sticky; top: 0; z-index: 40; backdrop-filter: blur(6px); }
     .chip { font-size: 11px; padding: 2px 8px; border-radius: 9999px; }
   </style>
 </head>
 <body class="h-full text-slate-900 bg-cyan-50">
-<header class="sticky-top bg-cyan-100/80 border-b border-cyan-200">
+<header class="sticky top-0 bg-cyan-100/80 border-b border-cyan-200 z-40 backdrop-blur">
   <div class="max-w-3xl mx-auto px-4 py-2 flex items-center gap-3 relative">
     <div class="w-8 h-8 rounded-xl bg-cyan-200 flex items-center justify-center">🏔️</div>
     <div class="flex-1">
@@ -30,6 +29,18 @@
           <button id="saveMB" class="mt-1 text-xs bg-cyan-700 text-white px-2 py-1 rounded">meteoblue speichern</button>
           <div class="text-[11px] text-slate-500 mt-1">Ohne Widget zeigt die Seite einen Fallback (Open‑Meteo).</div>
         </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <div class="text-xs font-semibold mb-1">Tarife ab Datum</div>
+            <input id="tariffStart" type="date" class="w-full text-xs border rounded-xl p-2" value="2025-12-10"/>
+          </div>
+          <div>
+            <div class="text-xs font-semibold mb-1">Anzahl Tage</div>
+            <input id="tariffDays" type="number" min="1" max="14" value="7" class="w-full text-xs border rounded-xl p-2"/>
+          </div>
+        </div>
+
         <div>
           <div class="text-xs font-semibold mb-1">Preisregeln (Sommer/Winter)</div>
           <textarea id="priceRules" class="w-full h-28 text-xs border rounded-xl p-2">{
@@ -37,9 +48,13 @@
   "winter": { "weekday": 79, "weekend": 92 },
   "link": "https://www.adelboden-lenk.ch/tarife"
 }</textarea>
-          <button id="saveRules" class="mt-1 text-xs bg-cyan-700 text-white px-2 py-1 rounded">Preisregeln speichern</button>
-          <div class="text-[11px] text-slate-500 mt-1">Die Preise sind „ab CHF …“ (dynamisch). Passe sie bei Bedarf an.</div>
+          <div class="flex gap-2 mt-1">
+            <button id="saveRules" class="text-xs bg-cyan-700 text-white px-2 py-1 rounded">Preisregeln speichern</button>
+            <button id="applyTariffRange" class="text-xs bg-cyan-700 text-white px-2 py-1 rounded">Zeitraum anwenden</button>
+          </div>
+          <div class="text-[11px] text-slate-500 mt-1">„ab CHF …“ (dynamisch). Für Live-Preis klick → Shop. Zeitraum wird gespeichert.</div>
         </div>
+
         <div>
           <div class="text-xs font-semibold mb-1">Anlagen (JSON Array)</div>
           <textarea id="liftsEdit" class="w-full h-24 text-xs border rounded-xl p-2">[
@@ -49,7 +64,6 @@
 ]</textarea>
           <button id="saveLifts" class="mt-1 text-xs bg-cyan-700 text-white px-2 py-1 rounded">Anlagen speichern</button>
         </div>
-        <div class="text-[11px] text-slate-500">Alles bleibt lokal im Browser (localStorage). Weiterhin nur diese eine Datei.</div>
       </div>
     </details>
   </div>
@@ -61,7 +75,6 @@
   <section class="bg-white rounded-2xl shadow-md p-4 sm:p-6">
     <h2 class="text-lg font-semibold tracking-tight mb-3 text-cyan-800">🎥 Webcams</h2>
     <div class="grid grid-cols-1 gap-3">
-      <!-- Feratel: Sillerenbühl -->
       <div class="rounded-xl overflow-hidden">
         <div class="flex items-center justify-between px-2 py-1 bg-cyan-50 border-b border-cyan-100">
           <div class="text-sm font-medium">Sillerenbühl (1974 m)</div>
@@ -69,7 +82,6 @@
         </div>
         <iframe src="https://webtv.feratel.com/webtv/?c0=0&c2=1&cam=4107&design=v5&lc=4107&lg=de&s=0" width="100%" height="280" allow="autoplay; fullscreen" loading="lazy" title="Webcam Sillerenbühl (feratel)"></iframe>
       </div>
-      <!-- Roundshot: Höchst (Adelboden) -->
       <div class="rounded-xl overflow-hidden">
         <div class="flex items-center justify-between px-2 py-1 bg-cyan-50 border-b border-cyan-100">
           <div class="text-sm font-medium">Höchst (Adelboden)</div>
@@ -77,7 +89,6 @@
         </div>
         <iframe src="https://adelbodenlenk.roundshot.com/hoechstbahn/" width="100%" height="280" loading="lazy" title="Webcam Höchst (roundshot)"></iframe>
       </div>
-      <!-- Feratel: Metschstand (Lenk) -->
       <div class="rounded-xl overflow-hidden">
         <div class="flex items-center justify-between px-2 py-1 bg-cyan-50 border-b border-cyan-100">
           <div class="text-sm font-medium">Metschstand (2103 m)</div>
@@ -109,10 +120,10 @@
     </div>
   </section>
 
-  <!-- Tarife (nächste 3 Tage) -->
+  <!-- Tarife (ab Startdatum, dynamische Regeln) -->
   <section class="bg-white rounded-2xl shadow-md p-4 sm:p-6">
     <div class="flex items-center justify-between">
-      <h2 class="text-lg font-semibold tracking-tight mb-3 text-cyan-800">🎟️ Tarife nächste 3 Tage</h2>
+      <h2 class="text-lg font-semibold tracking-tight mb-3 text-cyan-800">🎟️ Tarife (dynamisch)</h2>
       <span id="seasonBadge" class="chip bg-cyan-100">Saison</span>
     </div>
     <div id="tariffs" class="grid grid-cols-1 gap-2"></div>
@@ -150,12 +161,13 @@
 </main>
 
 <script>
-// ---- Defaults & storage ----
+// ===== Helpers & storage =====
 let RULES = {
   summer: { weekday: 65, weekend: 72 },
   winter: { weekday: 79, weekend: 92 },
   link: "https://www.adelboden-lenk.ch/tarife"
 };
+let EDIT = { start: "2025-12-10", days: 7 }; // default range
 let DATA = {
   lifts: [
     { name: "Oey – Bergläger", status: "open", from: "08:30", to: "16:45" },
@@ -170,47 +182,52 @@ let DATA = {
   snow: { valley_cm: 0, mountain_cm: 0, fresh24_cm: 0, last_snow: null, quality: null }
 };
 try {
-  const r = localStorage.getItem('price_rules'); if (r) RULES = JSON.parse(r);
+  const pr = localStorage.getItem('price_rules'); if (pr) RULES = JSON.parse(pr);
+  const st = localStorage.getItem('tariff_start'); if (st) EDIT.start = st;
+  const nd = localStorage.getItem('tariff_days'); if (nd) EDIT.days = parseInt(nd,10)||7;
   const l = localStorage.getItem('adelboden_lifts'); if (l) DATA.lifts = JSON.parse(l);
-  const p = localStorage.getItem('adelboden_pistes'); if (p) DATA.pistes = JSON.parse(p);
-  const s = localStorage.getItem('adelboden_snow'); if (s) DATA.snow = JSON.parse(s);
 } catch(e){}
 
-// ---- Network time (NTP-like) via worldtimeapi; fallback to device clock ----
-async function getNetworkTime() {
-  try {
-    const r = await fetch('https://worldtimeapi.org/api/timezone/Europe/Zurich', { cache: 'no-store' });
-    const j = await r.json();
-    return new Date(j.datetime);
-  } catch(e) {
-    return new Date();
-  }
-}
 function isWeekend(d){ const n = d.getDay(); return n===0 || n===6; } // Sun=0
 function isWinter(d){
   const m = d.getMonth(); // 0..11
   return (m === 10) || (m === 11) || (m <= 3); // Nov–Apr
 }
+function buildDatesFrom(startISO, n){
+  const out = [];
+  const base = new Date(startISO+"T00:00:00");
+  for (let i=0;i<n;i++){ const d = new Date(base); d.setDate(base.getDate()+i); out.push(d); }
+  return out;
+}
+function deepLinkToShop(date){
+  // Generischer Link zum Shop; Datum als Query anhängen (harmlos, falls ignoriert).
+  const d = date.toISOString().slice(0,10);
+  const u = new URL(RULES.link);
+  u.searchParams.set('date', d);
+  return u.toString();
+}
 
-// ---- Render helpers ----
-function renderTariffs(dates, winter){
+// ===== Renders =====
+function renderTariffs(dates){
   const box = document.getElementById('tariffs');
   const seasonBadge = document.getElementById('seasonBadge');
   box.innerHTML = '';
-  seasonBadge.textContent = winter ? 'Wintersaison' : 'Sommer / Off‑Season';
   dates.forEach(dt => {
+    const winter = isWinter(dt);
     const weekend = isWeekend(dt);
     const price = weekend ? (winter ? RULES.winter.weekend : RULES.summer.weekend)
                           : (winter ? RULES.winter.weekday : RULES.summer.weekday);
     const label = dt.toLocaleDateString('de-CH', { weekday:'short', day:'2-digit', month:'2-digit' });
     const a = document.createElement('a');
-    a.href = RULES.link; a.target = '_blank';
+    a.href = deepLinkToShop(dt); a.target = '_blank';
     a.className = 'rounded-xl border border-cyan-100 p-3 flex items-center justify-between hover:bg-cyan-50';
     a.innerHTML = `<div><div class="text-sm font-semibold">${label}</div>
                     <div class="text-[11px] text-slate-500">ab CHF ${price} (dynamisch)</div></div>
-                   <span class="text-xs bg-cyan-100 text-cyan-700 px-2 py-0.5 rounded-full">Zum Shop</span>`;
+                   <span class="text-xs bg-cyan-100 text-cyan-700 px-2 py-0.5 rounded-full">Live‑Preis</span>`;
     box.appendChild(a);
   });
+  const now = new Date();
+  seasonBadge.textContent = isWinter(now) ? 'Wintersaison' : 'Sommer / Off‑Season';
 }
 function renderLifts(list){
   const box = document.getElementById('lifts');
@@ -227,17 +244,13 @@ function renderLifts(list){
     box.appendChild(row);
   });
 }
-function renderSnow(data){
-  const set = (id, v) => document.getElementById(id).textContent = v ?? '–';
-  set('snowValley', `${data.valley_cm ?? 0} cm`);
-  set('snowMountain', `${data.mountain_cm ?? 0} cm`);
-  set('snowFresh', `${data.fresh24_cm ?? 0} cm`);
-  set('snowLast', data.last_snow ? new Date(data.last_snow).toLocaleDateString('de-CH') : '–');
-}
 function renderPistes(list){
   const box = document.getElementById('pistes');
   box.innerHTML = '';
-  list.forEach(p => {
+  // Off-season guard: In Sommer alle geschlossen anzeigen
+  const now = new Date();
+  const offSeason = !isWinter(now);
+  (offSeason ? list.map(p=>({...p,status:'closed'})) : list).forEach(p => {
     const icon = p.status === 'open' ? '✅' : p.status === 'part' ? '🟡' : '⛔';
     const statusColor = p.status === 'open' ? 'bg-emerald-100 text-emerald-700' :
                         p.status === 'part' ? 'bg-amber-100 text-amber-700' : 'bg-rose-100 text-rose-700';
@@ -250,8 +263,18 @@ function renderPistes(list){
     box.appendChild(row);
   });
 }
+function renderSnow(data){
+  const now = new Date();
+  const offSeason = !isWinter(now);
+  const S = offSeason ? { valley_cm: 0, mountain_cm: 0, fresh24_cm: 0, last_snow: null } : data;
+  const set = (id, v) => document.getElementById(id).textContent = v ?? '–';
+  set('snowValley', `${S.valley_cm ?? 0} cm`);
+  set('snowMountain', `${S.mountain_cm ?? 0} cm`);
+  set('snowFresh', `${S.fresh24_cm ?? 0} cm`);
+  set('snowLast', S.last_snow ? new Date(S.last_snow).toLocaleDateString('de-CH') : '–');
+}
 
-// ---- Weather (meteoblue vs Fallback) ----
+// ===== Weather (meteoblue vs Fallback) =====
 function renderMBWidget(){
   const html = localStorage.getItem('mb_widget_html');
   const box = document.getElementById('mbWidget');
@@ -307,46 +330,45 @@ async function loadWeatherFallback(){
   }
 }
 
-// ---- Init using network time ----
-async function init(){
+// ===== Init: Build tariffs from chosen start date =====
+function init(){
+  // Prefill editors from storage
+  try { const s = localStorage.getItem('mb_widget_html'); if (s) document.getElementById('mbEmbed').value = s; } catch(e){}
+  try { const pr = localStorage.getItem('price_rules'); if (pr) { RULES = JSON.parse(pr); document.getElementById('priceRules').value = JSON.stringify(RULES, null, 2);} } catch(e){}
+  document.getElementById('tariffStart').value = EDIT.start;
+  document.getElementById('tariffDays').value = EDIT.days;
+
   renderMBWidget();
-  // network time to decide season and build 3-day horizon
-  const now = await getNetworkTime();
-  const winter = isWinter(now);
-  const dates = [0,1,2].map(n => { const d = new Date(now); d.setDate(d.getDate()+n); return d; });
-  // Off-season logic
-  if (!winter) {
-    // force snow 0 and pistes closed
-    DATA.snow = { valley_cm: 0, mountain_cm: 0, fresh24_cm: 0, last_snow: null, quality: null };
-    DATA.pistes = DATA.pistes.map(p => ({...p, status: 'closed'}));
-  }
-  renderTariffs(dates, winter);
+  const dates = buildDatesFrom(EDIT.start, EDIT.days);
+  renderTariffs(dates);
   renderLifts(DATA.lifts);
   renderSnow(DATA.snow);
   renderPistes(DATA.pistes);
 }
 
+// Actions
 document.getElementById('refreshBtn').addEventListener('click', e => { e.preventDefault(); init(); });
+document.getElementById('saveMB').addEventListener('click', () => {
+  try { localStorage.setItem('mb_widget_html', document.getElementById('mbEmbed').value); renderMBWidget(); } catch(e){ alert('Konnte meteoblue Widget nicht speichern'); }
+});
+document.getElementById('saveRules').addEventListener('click', () => {
+  try { const obj = JSON.parse(document.getElementById('priceRules').value); RULES = obj; localStorage.setItem('price_rules', JSON.stringify(obj)); init(); } catch(e){ alert('Ungültiges JSON Preisregeln'); }
+});
+document.getElementById('applyTariffRange').addEventListener('click', () => {
+  const start = document.getElementById('tariffStart').value || EDIT.start;
+  const days = Math.max(1, Math.min(14, parseInt(document.getElementById('tariffDays').value, 10) || EDIT.days));
+  EDIT.start = start; EDIT.days = days;
+  localStorage.setItem('tariff_start', start);
+  localStorage.setItem('tariff_days', String(days));
+  const dates = buildDatesFrom(EDIT.start, EDIT.days);
+  renderTariffs(dates);
+});
 
-// Inline Editor wiring
-(function bootEditor(){
-  const mbArea = document.getElementById('mbEmbed');
-  const rulesArea = document.getElementById('priceRules');
-  const liftsArea = document.getElementById('liftsEdit');
-  try { const s = localStorage.getItem('mb_widget_html'); if (s) mbArea.value = s; } catch(e){}
-  try { const pr = localStorage.getItem('price_rules'); if (pr) { RULES = JSON.parse(pr); rulesArea.value = JSON.stringify(RULES, null, 2);} } catch(e){}
-  try { liftsArea.value = JSON.stringify(DATA.lifts, null, 2); } catch(e){}
-  document.getElementById('saveMB').addEventListener('click', () => {
-    try { localStorage.setItem('mb_widget_html', mbArea.value); renderMBWidget(); } catch(e){ alert('Konnte meteoblue Widget nicht speichern'); }
-  });
-  document.getElementById('saveRules').addEventListener('click', () => {
-    try { const obj = JSON.parse(rulesArea.value); RULES = obj; localStorage.setItem('price_rules', JSON.stringify(obj)); init(); } catch(e){ alert('Ungültiges JSON Preisregeln'); }
-  });
-  document.getElementById('saveLifts').addEventListener('click', () => {
-    try { const obj = JSON.parse(liftsArea.value); DATA.lifts = obj; localStorage.setItem('adelboden_lifts', JSON.stringify(obj)); renderLifts(DATA.lifts); } catch(e){ alert('Ungültiges JSON Anlagen'); }
-  });
-})();
+document.getElementById('saveLifts').addEventListener('click', () => {
+  try { const obj = JSON.parse(document.getElementById('liftsEdit').value); DATA.lifts = obj; localStorage.setItem('adelboden_lifts', JSON.stringify(obj)); renderLifts(DATA.lifts); } catch(e){ alert('Ungültiges JSON Anlagen'); }
+});
 
+// Boot
 init();
 </script>
 
