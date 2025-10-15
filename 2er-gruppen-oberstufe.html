@@ -25,49 +25,33 @@
                   var(--bg);
       color:var(--ink);
       font: 16px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
-      display:flex;
-      align-items:center;
-      justify-content:center;
+      display:block;
       padding:24px;
     }
-    .app{
-      width:min(1100px, 100%);
-    }
-    header{
-      display:flex;
-      align-items:center;
-      gap:14px;
-      margin-bottom:16px;
-    }
+    .app{width:min(1100px, 100%); margin-inline:auto}
+    header{display:flex; align-items:center; gap:14px; margin-bottom:16px}
     .logo{
       width:44px;height:44px;border-radius:10px;
       background: conic-gradient(from 0deg, var(--accent), #6fffcd, #ffd56a, #ff8ab0, var(--accent));
       box-shadow: 0 0 24px #2cf7ff55 inset, 0 0 24px #2cf7ff44;
       position:relative;
     }
-    .logo::after{
-      content:"🎰"; position:absolute; inset:0; display:grid; place-items:center; font-size:24px;
-      filter: drop-shadow(0 2px 2px #0007);
-    }
+    .logo::after{content:"🎰"; position:absolute; inset:0; display:grid; place-items:center; font-size:24px; filter:drop-shadow(0 2px 2px #0007)}
     h1{margin:0;font-weight:800;letter-spacing:0.3px;font-size: clamp(22px, 3.4vw, 30px);}
     .subtitle{color:var(--muted); margin-top:2px}
-    .grid{
-      display:grid;
-      grid-template-columns: 1.1fr 1.4fr;
-      gap:16px;
-    }
-    @media (max-width: 900px){
-      .grid{grid-template-columns: 1fr; }
-    }
+    .grid{display:grid; grid-template-columns: 1.1fr 1.4fr; gap:16px}
+    @media (max-width: 900px){.grid{grid-template-columns:1fr}}
     .card{
       background: linear-gradient(180deg, #1a2550 0%, #101733 100%);
       border:1px solid #2a3969;
       border-radius:14px;
       padding:16px;
       box-shadow: 0 10px 30px #0007, inset 0 1px 0 #3a4e88;
+      position:relative;
+      overflow:hidden;
     }
     label{font-weight:600; display:block; margin-bottom:8px}
-    textarea, select, button, input[type="text"]{
+    textarea, select, button{
       width:100%;
       background:#0e1430;
       color:var(--ink);
@@ -79,94 +63,66 @@
       transition:.2s border-color, .2s transform;
     }
     textarea{min-height:280px; resize:vertical}
-    select{appearance:none; background-image: linear-gradient(45deg, transparent 50%, var(--ink) 50%),
-                               linear-gradient(135deg, var(--ink) 50%, transparent 50%);
+    select{appearance:none; background-image: linear-gradient(45deg, transparent 50%, var(--ink) 50%), linear-gradient(135deg, var(--ink) 50%, transparent 50%);
            background-position: calc(100% - 20px) calc(1.05em), calc(100% - 15px) calc(1.05em);
-           background-size: 5px 5px, 5px 5px;
-           background-repeat: no-repeat;
-    }
+           background-size: 5px 5px, 5px 5px; background-repeat: no-repeat;}
     button{
-      cursor:pointer;
-      font-weight:700;
+      cursor:pointer; font-weight:700;
       background: linear-gradient(180deg, #0fd6ff, #0bb4df);
       border:0; color:#001025; text-shadow:0 1px 0 #fff6;
       box-shadow: 0 6px 20px #00d0ff55, 0 1px 0 #74f2ff inset;
     }
     button.secondary{
       background: linear-gradient(180deg, #ffd56a, #ffb04d);
-      box-shadow: 0 6px 20px #ffa54d55, 0 1px 0 #fff0cc inset;
-      color:#3b2200;
+      box-shadow: 0 6px 20px #ffa54d55, 0 1px 0 #fff0cc inset; color:#3b2200;
     }
-    button.ghost{
-      background: transparent;
-      color: var(--ink);
-      border:1px dashed #3a4e88;
-      text-shadow:none;
-      box-shadow:none;
-    }
+    button.ghost{background: transparent; color: var(--ink); border:1px dashed #3a4e88; text-shadow:none; box-shadow:none;}
     button:active{transform: translateY(1px)}
-    .controls{
-      display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-top:12px
-    }
-    .inline{
-      display:flex; gap:12px; align-items:center; margin-top:8px
-    }
+    .controls{display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-top:12px}
+    .inline{display:flex; gap:12px; align-items:center; margin-top:8px}
     .inline > *{flex:1}
     .hint{font-size:13px; color:var(--muted); margin-top:8px}
     .status{margin-top:8px; font-weight:600}
-    .status.ok{color:var(--ok)}
-    .status.warn{color:var(--warn)}
-    .status.bad{color:var(--danger)}
-    /* Results */
-    .results{
-      display:grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap:14px;
-      min-height: 120px;
-    }
+    .status.ok{color:var(--ok)} .status.warn{color:var(--warn)} .status.bad{color:var(--danger)}
+    .toolbar{display:flex; gap:10px; flex-wrap:wrap; margin-top:10px}
+    .footer{margin-top:18px; font-size:12px; color:var(--muted); text-align:center}
+    .results{display:grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap:14px; min-height: 120px; scroll-margin-top: 12px}
     .group{
       position:relative;
       background: linear-gradient(180deg, #0f1536 0%, #0a0f28 100%);
       border:1px solid #283560;
       border-radius:14px;
-      padding:12px;
-      overflow:hidden;
+      padding:12px; overflow:hidden;
       box-shadow: 0 8px 22px #0007, inset 0 1px 0 #2b3f7a;
     }
-    .group h3{
-      margin:0 0 8px;
-      font-size:14px; letter-spacing:1px; text-transform:uppercase; color:#a8c1ff;
-    }
+    .group h3{margin:0 0 8px; font-size:14px; letter-spacing:1px; text-transform:uppercase; color:#a8c1ff}
     .slot{
       position:relative;
-      height:64px; overflow:hidden; border-radius:10px; border:1px solid #31457e;
+      height:120px; /* höher für bessere Lesbarkeit */
+      overflow:hidden;
+      border-radius:10px; border:1px solid #31457e;
       background: radial-gradient(300px 64px at 50% 0%, #1a2550 0%, #0a0f28 70%);
       box-shadow: inset 0 1px 0 #4a65b2;
     }
-    .reel{
-      position:absolute; inset:0; display:flex; flex-direction:column; gap:6px; padding:8px;
-      transform: translateY(0);
-    }
+    .reel{position:absolute; inset:0; display:flex; flex-direction:column; gap:10px; padding:10px; transform: translateY(0)}
     .cell{
-      padding:6px 10px; border-radius:8px; background:#0b1333; border:1px solid #243363;
-      font-weight:700; white-space:nowrap; text-overflow:ellipsis; overflow:hidden;
+      padding:12px 16px;
+      border-radius:12px;
+      background:#0b1333;
+      border:1px solid #243363;
+      font-weight:800;
+      font-size:26px; /* Variante B: sehr gross */
+      line-height:1.2;
+      text-align:center;
+      color:#e8f2ff;
+      white-space:nowrap; text-overflow:ellipsis; overflow:hidden;
+      box-shadow:inset 0 1px 0 #3a4e88, 0 2px 8px #0007;
     }
     .group .badge{
       position:absolute; right:10px; top:10px; font-size:11px; background:#0fd6ff22; border:1px solid #2b6b8f; color:#a9f2ff;
       padding:2px 6px; border-radius:999px; letter-spacing:0.6px;
     }
-    .toolbar{
-      display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;
-    }
-    .footer{
-      margin-top:18px; font-size:12px; color:var(--muted); text-align:center
-    }
-    .shine{
-      position:absolute; inset:-1px; pointer-events:none;
-      background: conic-gradient(from 0deg at 10% 10%, #ffffff15, transparent 15% 70%, #ffffff08 80%);
-      filter: blur(8px);
-      border-radius:14px;
-    }
+    .shine{position:absolute; inset:-1px; pointer-events:none; background: conic-gradient(from 0deg at 10% 10%, #ffffff15, transparent 15% 70%, #ffffff08 80%); filter: blur(8px); border-radius:14px}
   </style>
 </head>
 <body>
@@ -174,7 +130,7 @@
     <header>
       <div class="logo" aria-hidden="true"></div>
       <div>
-        <h1>🎰 2er‑Gruppen Bilden</h1>
+        <h1>🎰 2er-Gruppen Bilden</h1>
         <div class="subtitle">Für Oberstufenklassen – Namen einfügen, Gruppengrösse wählen, Jackpot starten!</div>
       </div>
     </header>
@@ -191,12 +147,9 @@ Eva Beispiel
             <label for="size">Gruppengrösse</label>
             <select id="size">
               <option value="2" selected>2 Personen</option>
-              <option value="3">3 Personen (falls nötig)</option>
+              <option value="3">3 Personen</option>
+              <option value="4">4 Personen</option>
             </select>
-          </div>
-          <div>
-            <label for="seed">Zufall (optional)</label>
-            <input id="seed" type="text" placeholder="Seed für reproduzierbare Gruppen" />
           </div>
         </div>
 
@@ -204,7 +157,7 @@ Eva Beispiel
           <button id="go">🎲 Gruppen bilden</button>
           <button class="secondary" id="reshuffle">🔁 Neu mischen</button>
         </div>
-        <div class="hint">Tipp: Ideal sind 15–20 Namen. Bei ungerader Zahl wird automatisch eine 3er‑Gruppe erstellt.</div>
+        <div class="hint">Tipp: Ideal sind 15–20 Namen. Ungerade oder Restzahlen werden automatisch fair aufgeteilt.</div>
         <div class="status" id="status"></div>
       </section>
 
@@ -222,35 +175,51 @@ Eva Beispiel
   </div>
 
 <script>
-// Utility: seeded RNG (Mulberry32)
-function mulberry32(a) {
-  return function() {
-    let t = a += 0x6D2B79F5;
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  }
-}
-function getRng(seedStr){
-  if(!seedStr) return Math.random;
-  let h = 1779033703 ^ seedStr.length;
-  for(let i=0;i<seedStr.length;i++){
-    h = Math.imul(h ^ seedStr.charCodeAt(i), 3432918353);
-    h = (h<<13) | (h>>>19);
-  }
-  return mulberry32(h>>>0);
-}
-
-// Shuffle with RNG
-function shuffle(array, rng=Math.random){
+// Simple shuffle
+function shuffle(array){
   for(let i=array.length-1;i>0;i--){
-    const j = Math.floor(rng()*(i+1));
+    const j = Math.floor(Math.random()*(i+1));
     [array[i], array[j]] = [array[j], array[i]];
   }
   return array;
 }
 
-// Slot animation sound (ding)
+// Try to avoid 1er-Gruppen by rebalancing
+function buildGroupsBalanced(names, size){
+  const clean = names.map(n=>n.trim()).filter(n=>n.length>0);
+  shuffle(clean);
+  let groups = [];
+  for(let i=0;i<clean.length;i+=size){
+    groups.push(clean.slice(i, i+size));
+  }
+  // Rebalance tails
+  if(groups.length > 1){
+    const last = groups[groups.length-1];
+    if(last.length === 1){
+      // move one from previous groups to avoid singletons
+      for(let k=groups.length-2; k>=0 && last.length < 2; k--){
+        if(groups[k].length > 2){
+          last.unshift(groups[k].pop());
+        }
+      }
+    }
+    // For size 4, if tail is 2 and previous has 4+, keep as 2 (ok) or make two 3er
+    if(size === 4 && groups.length > 1){
+      const prev = groups[groups.length-2];
+      const last2 = groups[groups.length-1];
+      if(last2.length === 2 && prev.length === 4){
+        prev.pop(); // move one to last -> 3 + 3
+        last2.push(prev.pop()); // ensure still 3? adjust with two pops
+        if(prev.length < 3){ // correct if we popped twice
+          prev.push(groups[groups.length-1].shift());
+        }
+      }
+    }
+  }
+  return groups;
+}
+
+// Slot animation sound
 function playDing(){
   try{
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -264,62 +233,15 @@ function playDing(){
     o.connect(g).connect(ctx.destination);
     o.start();
     o.stop(ctx.currentTime+0.26);
-  }catch(e){/* ignore */}
+  }catch(e){}
 }
 
-// Build groups
-function buildGroups(names, size){
-  const clean = names.map(n=>n.trim()).filter(n=>n.length>0);
-  const n = clean.length;
-  const info = document.getElementById('status');
-
-  if(n === 0){
-    info.className = "status bad";
-    info.textContent = "Bitte zuerst Namen eingeben.";
-    return [];
-  }
-  if(n < 15 || n > 30){
-    info.className = "status warn";
-    info.textContent = `Hinweis: Du hast ${n} Namen eingetragen. Empfohlen sind 15–20 (funktioniert aber auch so).`;
-  } else {
-    info.className = "status ok";
-    info.textContent = `Perfekt: ${n} Namen – Gruppengrösse ${size}.`;
-  }
-
-  const rng = getRng(document.getElementById('seed').value.trim());
-  shuffle(clean, rng);
-
-  let groups = [];
-  if(size === 2){
-    // Make pairs; if odd, create one trio at the end
-    for(let i=0;i<clean.length;i+=2){
-      groups.push([clean[i], clean[i+1]].filter(Boolean));
-    }
-    if(groups[groups.length-1] && groups[groups.length-1].length === 1 && clean.length >= 3){
-      // move one from previous to make a trio
-      const last = groups.pop();
-      groups[groups.length-1].push(last[0]);
-    }
-  } else {
-    for(let i=0;i<clean.length;i+=3){
-      groups.push([clean[i], clean[i+1], clean[i+2]].filter(Boolean));
-    }
-    // if final group has 1 person, rebalance: move one from previous
-    if(groups.length>1 && groups[groups.length-1].length === 1){
-      groups[groups.length-2].push(groups[groups.length-1][0]);
-      groups.pop();
-    }
-  }
-  return groups;
-}
-
-// Render with "slot" animation
 function renderGroups(groups){
   const results = document.getElementById('results');
   results.innerHTML = "";
   const allNames = groups.flat();
-  const spinRounds = 12; // how many cells scroll by
-  const baseDelay = 250; // ms between group stops
+  const spinRounds = 10; // how many fake cells before the real ones
+  const baseDelay = 450; // ms between group stops
 
   groups.forEach((g, idx)=>{
     const card = document.createElement('div');
@@ -334,44 +256,38 @@ function renderGroups(groups){
     const reel = document.createElement('div'); reel.className = 'reel';
     slot.appendChild(reel);
 
-    // Fill reel with random names many times for animation feel
-    const namesForReel = [];
+    const cells = [];
     for(let r=0;r<spinRounds;r++){
       const picks = shuffle([...allNames]).slice(0, g.length);
       picks.forEach(p=>{
-        const cell = document.createElement('div');
-        cell.className = 'cell';
-        cell.textContent = p;
-        namesForReel.push(cell);
+        const c = document.createElement('div');
+        c.className = 'cell';
+        c.textContent = p;
+        cells.push(c);
       });
     }
-    // Final cells are the actual group members
-    g.forEach(p=>{
-      const cell = document.createElement('div');
-      cell.className = 'cell';
-      cell.textContent = p;
-      namesForReel.push(cell);
+    g.forEach(p=>{ // final real names
+      const c = document.createElement('div');
+      c.className = 'cell';
+      c.textContent = p;
+      cells.push(c);
     });
-    namesForReel.forEach(c=>reel.appendChild(c));
+    cells.forEach(c=> reel.appendChild(c));
 
     card.appendChild(title);
     card.appendChild(badge);
     card.appendChild(slot);
     results.appendChild(card);
 
-    // Animate: translateY to reveal cells gradually (like a reel)
-    const cellHeight = 6 + 10 + 2 + 20; // approximate but we'll measure later
-    // After mount, measure
+    // Animate reel to final group
     setTimeout(()=>{
       const anyCell = reel.querySelector('.cell');
-      const h = anyCell ? anyCell.getBoundingClientRect().height + 6 : 28;
-      const totalCells = namesForReel.length;
-      const finalOffset = -(h * (totalCells - g.length)); // reveal final g.length cells
-      const duration = 1000 + idx*baseDelay + Math.random()*300;
-      reel.style.transition = `transform ${duration}ms cubic-bezier(.17,.67,.22,1.1)`;
-      // Start from top
+      const h = anyCell ? anyCell.getBoundingClientRect().height + 10 : 36;
+      const total = cells.length;
+      const finalOffset = -(h * (total - g.length));
+      const duration = 1100 + idx*baseDelay + Math.random()*300;
+      reel.style.transition = `transform ${duration}ms cubic-bezier(.17,.67,.22,1.08)`;
       reel.style.transform = `translateY(0px)`;
-      // Trigger
       setTimeout(()=>{
         reel.style.transform = `translateY(${finalOffset}px)`;
         setTimeout(()=> playDing(), duration-120);
@@ -380,7 +296,6 @@ function renderGroups(groups){
   });
 }
 
-// Copy results to clipboard
 function copyResults(groups){
   const lines = groups.map((g,i)=>`Gruppe ${i+1}: ${g.join(' | ')}`);
   const text = lines.join('\n');
@@ -411,45 +326,45 @@ function getNamesList(){
   return document.getElementById('names').value.split('\n');
 }
 
-document.getElementById('go').addEventListener('click', ()=>{
+function generateAndShow(scrollAfter=true){
   const names = getNamesList();
   const size = parseInt(document.getElementById('size').value, 10);
-  const groups = buildGroups(names, size);
-  if(groups.length){
-    lastGroups = groups;
-    renderGroups(groups);
-  }
-});
-
-document.getElementById('reshuffle').addEventListener('click', ()=>{
-  const names = getNamesList();
-  const size = parseInt(document.getElementById('size').value, 10);
-  // shuffle by changing seed slightly if empty
-  const seed = document.getElementById('seed');
-  if(!seed.value) seed.value = String(Math.floor(Math.random()*1e6));
-  else seed.value += '·';
-  const groups = buildGroups(names, size);
-  if(groups.length){
-    lastGroups = groups;
-    renderGroups(groups);
-  }
-});
-
-document.getElementById('copy').addEventListener('click', ()=>{
-  if(!lastGroups.length){
-    toast('Zuerst Gruppen bilden 🙂');
+  const clean = names.map(n=>n.trim()).filter(Boolean);
+  const info = document.getElementById('status');
+  if(clean.length === 0){
+    info.className = "status bad";
+    info.textContent = "Bitte zuerst Namen eingeben.";
     return;
   }
+  if(clean.length < 15 || clean.length > 30){
+    info.className = "status warn";
+    info.textContent = `Hinweis: Du hast ${clean.length} Namen eingetragen. Empfohlen sind 15–20 (funktioniert aber auch so).`;
+  } else {
+    info.className = "status ok";
+    info.textContent = `Perfekt: ${clean.length} Namen – Gruppengrösse ${size}.`;
+  }
+  const groups = buildGroupsBalanced(clean, size);
+  if(groups.length){
+    lastGroups = groups;
+    renderGroups(groups);
+    if(scrollAfter){
+      // Scroll so that die Resultate im Fokus sind (ganzer Screen für Anzeige)
+      document.getElementById('results').scrollIntoView({behavior:'smooth', block:'start'});
+    }
+  }
+}
+
+document.getElementById('go').addEventListener('click', ()=> generateAndShow(true));
+document.getElementById('reshuffle').addEventListener('click', ()=> generateAndShow(false));
+document.getElementById('copy').addEventListener('click', ()=>{
+  if(!lastGroups.length){ toast('Zuerst Gruppen bilden 🙂'); return; }
   copyResults(lastGroups);
 });
-
 document.getElementById('clear').addEventListener('click', ()=>{
   document.getElementById('names').value='';
-  document.getElementById('seed').value='';
   document.getElementById('results').innerHTML='';
   document.getElementById('status').textContent='';
 });
-
 document.getElementById('sample').addEventListener('click', ()=>{
   const demo = [
     "Anouk","Loris","Mia","Ben","Lina","Noah","Emilia","Levi","Lea","Luca",
